@@ -1,5 +1,6 @@
+
 <p align="center">
-  <img src="doc/banner.png" width="100%" alt="Vulkan Template Banner">
+    <img src="doc/banner.png" width="100%" alt="Vulkan Template Banner">
 </p>
 
 # Vulkan SDL C++ Template
@@ -8,7 +9,6 @@ A clean boilerplate project to skip the initial ~1,000 lines of Vulkan setup and
 
 - Core stack: SDL3, VMA, Assimp, Dear ImGui, GLM, STB
 - No fancy abstractions just a few reusable classes (Texture, Mesh, etc.)
-- Fast cloning via shallow git submodules
 - Minimal CMakeLists build file
 
 Feel free to fork it, copy-paste the code and assets, or use them for any project you want.
