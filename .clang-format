@@ -1,0 +1,66 @@
+---
+Language:     Cpp
+BasedOnStyle: LLVM
+LineEnding:   LF
+
+# Indentation
+IndentWidth:             4
+TabWidth:                4
+UseTab:                  Never
+ContinuationIndentWidth: 4
+AccessModifierOffset:    -4
+NamespaceIndentation:    None
+
+# Braces: Allman (on their own line everywhere)
+BreakBeforeBraces: Allman
+
+# Lines longer than this are wrapped
+ColumnLimit: 150
+
+# Pointers and references
+DerivePointerAlignment: false
+PointerAlignment:       Middle
+ReferenceAlignment:     Middle
+
+# Alignment
+AlignConsecutiveAssignments:  Consecutive
+AlignConsecutiveDeclarations: Consecutive
+AlignTrailingComments:        true
+AlignAfterOpenBracket:        BlockIndent
+BreakBeforeBinaryOperators:   NonAssignment
+AlignOperands:                Align
+
+# Parameters / Arguments
+BinPackParameters:                         false
+BinPackArguments:                          false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine:               false
+
+# Constructor initializer list
+PackConstructorInitializers:  Never
+BreakConstructorInitializers: BeforeComma
+
+# Short-form collapsing
+AllowShortBlocksOnASingleLine:        Empty
+AllowShortFunctionsOnASingleLine:     Empty
+AllowShortIfStatementsOnASingleLine:  Never
+AllowShortLoopsOnASingleLine:         false
+AllowShortLambdasOnASingleLine:       All
+AllowShortCaseLabelsOnASingleLine:    false
+
+# Spacing
+SpaceBeforeParens:                 ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeCpp11BracedList:        true
+SpacesInParentheses:               false
+SpacesInAngles:                    Never
+SpaceAfterCStyleCast:              false
+
+# Blank lines
+MaxEmptyLinesToKeep:              1
+KeepEmptyLinesAtTheStartOfBlocks: true
+
+# Misc
+IndentCaseLabels: false
+ReflowComments:   false
+...
