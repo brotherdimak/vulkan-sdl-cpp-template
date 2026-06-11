@@ -3,6 +3,10 @@
 
 #include <stdexcept>
 
+#ifndef IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE
+#define IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE 500
+#endif
+
 UIRenderer::UIRenderer()
     : m_Renderer(nullptr)
     , m_ColorFormat(VK_FORMAT_UNDEFINED)
@@ -73,12 +77,7 @@ VkCommandBuffer UIRenderer::PrepareCommandBuffer(int imageIndex)
 
     vkBeginCommandBuffer(commandBuffer, &beginInfo);
 
-    RenderUtils::AddImageMemoryBarrier(
-        commandBuffer,
-        image,
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-    );
+    RenderUtils::AddImageMemoryBarrier(commandBuffer, image, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
     VkRenderingAttachmentInfoKHR colorAttachment {};
     colorAttachment.sType       = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
@@ -100,12 +99,7 @@ VkCommandBuffer UIRenderer::PrepareCommandBuffer(int imageIndex)
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
     m_Renderer->vkCmdEndRenderingKHR(commandBuffer);
 
-    RenderUtils::AddImageMemoryBarrier(
-        commandBuffer,
-        image,
-        VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
-    );
+    RenderUtils::AddImageMemoryBarrier(commandBuffer, image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
     vkEndCommandBuffer(commandBuffer);
 
@@ -115,7 +109,9 @@ VkCommandBuffer UIRenderer::PrepareCommandBuffer(int imageIndex)
 void UIRenderer::CreateDescriptorPool()
 {
     VkDescriptorPoolSize poolSizes[] = {
+        {VK_DESCRIPTOR_TYPE_SAMPLER, IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE},
         {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE},
+        {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE}
     };
 
     VkDescriptorPoolCreateInfo poolInfo {};
@@ -188,7 +184,7 @@ void UIRenderer::SetupImGui()
     initInfo.PipelineInfoMain.Subpass     = 0;
     initInfo.PipelineInfoMain.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
-    initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
+    initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.sType                   = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
     initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.colorAttachmentCount    = 1;
     initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.pColorAttachmentFormats = &m_ColorFormat;
     initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.depthAttachmentFormat   = m_DepthFormat;
