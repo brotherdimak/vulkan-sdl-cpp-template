@@ -1,24 +1,18 @@
 [submodule "lib/glm"]
 	path = lib/glm
 	url = https://github.com/g-truc/glm
-	shallow = true
 [submodule "lib/sdl"]
 	path = lib/sdl
 	url = https://github.com/libsdl-org/SDL
-    shallow = true
 [submodule "lib/stb"]
 	path = lib/stb
 	url = https://github.com/nothings/stb
-    shallow = true
 [submodule "lib/imgui"]
 	path = lib/imgui
 	url = https://github.com/ocornut/imgui
-    shallow = true
 [submodule "lib/assimp"]
 	path = lib/assimp
 	url = https://github.com/assimp/assimp
-    shallow = true
 [submodule "lib/vma"]
 	path = lib/vma
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
-    shallow = true

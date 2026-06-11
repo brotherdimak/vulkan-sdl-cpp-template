@@ -24,7 +24,7 @@ Feel free to fork it, copy-paste the code and assets, or use them for any projec
 ```bash
 git clone https://github.com/brotherdimak/vulkan-sdl-cpp-template.git
 cd vulkan-sdl-cpp-template
-git submodule update --init --recursive
+git submodule update --init --recursive --depth 1
 ```
 
 ### 2. Configure & Build
