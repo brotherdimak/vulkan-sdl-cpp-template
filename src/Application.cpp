@@ -35,7 +35,7 @@ Application::Application()
 Application::~Application()
 {
     // Wait for GPU to finish all pending operations
-    vkDeviceWaitIdle(m_renderer.GetDevice());
+    vkDeviceWaitIdle(m_renderer.GetContext().device);
 
     // Destroy Vulkan resources
     m_sceneObjects.clear();
@@ -50,8 +50,7 @@ Application::~Application()
 
 void Application::Init()
 {
-    m_renderer.SetWindow(m_window);
-    m_renderer.InitVulkan();
+    m_renderer.Init(m_window);
     m_uiRenderer.Init(&m_renderer);
 
     InitCamera();

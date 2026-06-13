@@ -292,7 +292,7 @@ void Texture::CreateDescriptorSet()
     allocInfo.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool     = m_context.descriptorPool;
     allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts        = &m_context.textureLayout;
+    allocInfo.pSetLayouts        = &m_context.textureDescriptorSetLayout;
 
     if (vkAllocateDescriptorSets(m_context.device, &allocInfo, &m_descriptorSet) != VK_SUCCESS)
         throw std::runtime_error("failed to allocate descriptor sets!");

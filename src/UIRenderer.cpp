@@ -39,7 +39,7 @@ void UIRenderer::Init(Renderer * renderer)
 
 void UIRenderer::Cleanup()
 {
-    vkDeviceWaitIdle(m_Renderer->GetDevice());
+    auto & context = m_Renderer->GetContext();
 
     ImGui_ImplVulkan_Shutdown();
     ImGui_ImplSDL3_Shutdown();
@@ -47,7 +47,7 @@ void UIRenderer::Cleanup()
 
     if (m_DescriptorPool != VK_NULL_HANDLE)
     {
-        vkDestroyDescriptorPool(m_Renderer->GetDevice(), m_DescriptorPool, nullptr);
+        vkDestroyDescriptorPool(context.device, m_DescriptorPool, nullptr);
         m_DescriptorPool = VK_NULL_HANDLE;
     }
 
@@ -63,6 +63,8 @@ void UIRenderer::BeginFrame()
 
 VkCommandBuffer UIRenderer::PrepareCommandBuffer(int imageIndex)
 {
+    auto & context = m_Renderer->GetContext();
+
     // Update display size
     m_FrameBufferSize = m_Renderer->GetFramebufferSize();
 
@@ -101,9 +103,9 @@ VkCommandBuffer UIRenderer::PrepareCommandBuffer(int imageIndex)
     renderingInfo.pColorAttachments    = &colorAttachment;
 
     // Dynamic Rendering (Vulkan >= 1.3)
-    m_Renderer->vkCmdBeginRenderingKHR(commandBuffer, &renderingInfo);
+    context.vkCmdBeginRenderingKHR(commandBuffer, &renderingInfo);
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), commandBuffer);
-    m_Renderer->vkCmdEndRenderingKHR(commandBuffer);
+    context.vkCmdEndRenderingKHR(commandBuffer);
 
     RenderUtils::AddImageMemoryBarrier(commandBuffer, image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
@@ -114,6 +116,8 @@ VkCommandBuffer UIRenderer::PrepareCommandBuffer(int imageIndex)
 
 void UIRenderer::CreateDescriptorPool()
 {
+    auto & context = m_Renderer->GetContext();
+
     VkDescriptorPoolSize poolSizes[] = {
         {VK_DESCRIPTOR_TYPE_SAMPLER, IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE},
         {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE},
@@ -131,17 +135,17 @@ void UIRenderer::CreateDescriptorPool()
     poolInfo.poolSizeCount = (uint32_t)IM_COUNTOF(poolSizes);
     poolInfo.pPoolSizes    = poolSizes;
 
-    vkCreateDescriptorPool(m_Renderer->GetDevice(), &poolInfo, nullptr, &m_DescriptorPool);
+    vkCreateDescriptorPool(context.device, &poolInfo, nullptr, &m_DescriptorPool);
 
     m_CommandBuffers.resize(m_Renderer->GetImageCount());
 
     VkCommandBufferAllocateInfo allocInfo {};
     allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool        = m_Renderer->GetCommandPool();
+    allocInfo.commandPool        = context.commandPool;
     allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
 
-    if (vkAllocateCommandBuffers(m_Renderer->GetDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS)
+    if (vkAllocateCommandBuffers(context.device, &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS)
         throw std::runtime_error("failed to allocate imgui command buffers!");
 }
 
@@ -166,13 +170,15 @@ void UIRenderer::SetupImGui()
     // Setup Platform / Renderer backends
     ImGui_ImplSDL3_InitForVulkan(m_Renderer->GetWindow());
 
+    auto & context = m_Renderer->GetContext();
+
     ImGui_ImplVulkan_InitInfo initInfo {};
     initInfo.ApiVersion     = m_Renderer->GetApiVersion();
     initInfo.Instance       = m_Renderer->GetInstance();
-    initInfo.PhysicalDevice = m_Renderer->GetPhysicalDevice();
-    initInfo.Device         = m_Renderer->GetDevice();
-    initInfo.QueueFamily    = m_Renderer->GetPresentQueueFamilyIndex();
-    initInfo.Queue          = m_Renderer->GetPresentQueue();
+    initInfo.PhysicalDevice = context.physicalDevice;
+    initInfo.Device         = context.device;
+    initInfo.QueueFamily    = context.presentQueueIndex;
+    initInfo.Queue          = context.presentQueue;
     initInfo.PipelineCache  = nullptr;
     initInfo.DescriptorPool = m_DescriptorPool;
     initInfo.MinImageCount  = m_Renderer->GetMinImageCount();
@@ -181,7 +187,7 @@ void UIRenderer::SetupImGui()
 
     // Store formats as member variables since we need them to persist
     m_ColorFormat = m_Renderer->GetSwapChainImageFormat();
-    m_DepthFormat = RenderUtils::FindDepthFormat(m_Renderer->GetContext());
+    m_DepthFormat = RenderUtils::FindDepthFormat(context);
 
     // Dynamic rendering (no separate render pass)
     initInfo.UseDynamicRendering = true;

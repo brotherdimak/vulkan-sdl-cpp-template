@@ -5,16 +5,12 @@
 
 #include <SDL3/SDL_log.h>
 
+#include "Mesh.h"
 #include "Renderer.h"
 #include "SceneObject.h"
 #include "Shader.h"
-#include "Mesh.h"
 
-RenderPipeline::RenderPipeline(
-    const RenderContext & context,
-    const std::string &   vertShaderPath,
-    const std::string &   fragShaderPath
-)
+RenderPipeline::RenderPipeline(const RenderContext & context, const std::string & vertShaderPath, const std::string & fragShaderPath)
     : m_context(context)
     , m_pipelineLayout(VK_NULL_HANDLE)
     , m_graphicsPipeline(VK_NULL_HANDLE)
@@ -107,9 +103,8 @@ void RenderPipeline::CreateGraphicsPipeline(const std::string & vertShaderPath, 
     depthStencil.stencilTestEnable     = VK_FALSE;
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment {};
-    colorBlendAttachment.colorWriteMask =
-        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-    colorBlendAttachment.blendEnable = VK_FALSE;
+    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.blendEnable    = VK_FALSE;
 
     VkPipelineColorBlendStateCreateInfo colorBlending {};
     colorBlending.sType             = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -129,7 +124,7 @@ void RenderPipeline::CreateGraphicsPipeline(const std::string & vertShaderPath, 
     dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
     dynamicState.pDynamicStates    = dynamicStates.data();
 
-    std::array<VkDescriptorSetLayout, 2> descriptorSetLayouts = {m_context.globalLayout, m_context.textureLayout};
+    std::array<VkDescriptorSetLayout, 2> descriptorSetLayouts = {m_context.globalDescriptorSetLayout, m_context.textureDescriptorSetLayout};
 
     VkPushConstantRange pushConstantRange {};
     pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
@@ -165,8 +160,7 @@ void RenderPipeline::CreateGraphicsPipeline(const std::string & vertShaderPath, 
     pipelineInfo.subpass             = 0;
     pipelineInfo.basePipelineHandle  = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(m_context.device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_graphicsPipeline)
-        != VK_SUCCESS)
+    if (vkCreateGraphicsPipelines(m_context.device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_graphicsPipeline) != VK_SUCCESS)
         throw std::runtime_error("failed to create graphics pipeline!");
 
     vertShader.Cleanup();
