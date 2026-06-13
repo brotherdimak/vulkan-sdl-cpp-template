@@ -1,9 +1,14 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <string>
 #include <vector>
-#include <vulkan/vulkan.h>
+#include <array>
+#include <cstdint>
+
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+
+#include <vulkan/vulkan_core.h>
 
 #include "Buffer.h"
 

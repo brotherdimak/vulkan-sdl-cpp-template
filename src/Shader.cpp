@@ -1,8 +1,8 @@
 #include "Shader.h"
 
-#include "Renderer.h"
-
 #include <fstream>
+
+#include "Renderer.h"
 
 namespace
 {

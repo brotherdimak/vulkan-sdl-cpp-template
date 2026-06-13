@@ -1,7 +1,13 @@
 #include "UIRenderer.h"
-#include "RenderUtils.h"
 
 #include <stdexcept>
+
+#include "Renderer.h"
+#include "RenderUtils.h"
+
+#include <imgui.h>
+#include <backends/imgui_impl_sdl3.h>
+#include <backends/imgui_impl_vulkan.h>
 
 #ifndef IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE
 #define IMGUI_IMPL_VULKAN_MINIMUM_IMAGE_SAMPLER_POOL_SIZE 500

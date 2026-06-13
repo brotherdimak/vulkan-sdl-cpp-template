@@ -1,9 +1,15 @@
 #pragma once
 
+#include <string>
+#include <memory>
+
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+
+#include <vulkan/vulkan_core.h>
+
 #include "Mesh.h"
 #include "Texture.h"
-
-#include <glm/glm.hpp>
 
 struct RenderContext;
 

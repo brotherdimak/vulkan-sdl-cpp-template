@@ -1,6 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+
+struct SDL_Window;
 
 class Camera
 {
@@ -8,7 +11,7 @@ public:
     Camera();
 
 public:
-    void HandleInput(float deltaTime);
+    void HandleInput(SDL_Window * window, float deltaTime);
 
     void UpdateProjection();
     void UpdateView();

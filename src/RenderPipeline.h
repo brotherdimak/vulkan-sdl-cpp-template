@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <vulkan/vulkan.h>
+
+#include <vulkan/vulkan_core.h>
 
 struct RenderContext;
 
@@ -14,8 +15,8 @@ public:
         const std::string &   fragShaderPath
     );
 
-    RenderPipeline(RenderPipeline & other)             = delete;
-    RenderPipeline & operator=(RenderPipeline & other) = delete;
+    RenderPipeline(const RenderPipeline & other)             = delete;
+    RenderPipeline & operator=(const RenderPipeline & other) = delete;
 
     RenderPipeline(RenderPipeline && other) noexcept;
     RenderPipeline & operator=(RenderPipeline && other) noexcept;

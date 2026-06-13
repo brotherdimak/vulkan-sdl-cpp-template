@@ -1,18 +1,17 @@
 #pragma once
 
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_vulkan.h>
-
 #include <unordered_map>
 #include <vector>
 #include <string>
 
-#include "Camera.h"
-#include "RenderPipeline.h"
-#include "RenderUtils.h"
 #include "Renderer.h"
-#include "SceneObject.h"
 #include "UIRenderer.h"
+#include "Camera.h"
+
+class SceneObject;
+class RenderPipeline;
+
+struct SDL_Window;
 
 class Application
 {

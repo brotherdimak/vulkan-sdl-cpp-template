@@ -1,10 +1,15 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <memory>
 #include <vector>
-#include <vk_mem_alloc.h>
-#include <vulkan/vulkan.h>
+#include <cstdint>
+
+#include <glm/mat4x4.hpp>
+
+#include <vulkan/vulkan_core.h>
+
+struct VmaAllocation_T;
+typedef struct VmaAllocation_T * VmaAllocation;
 
 struct RenderContext;
 

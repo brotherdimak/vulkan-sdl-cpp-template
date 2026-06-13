@@ -1,11 +1,11 @@
 #include "Camera.h"
 
-#include <SDL3/SDL.h>
+#include <SDL3/SDL_keyboard.h>
+#include <SDL3/SDL_mouse.h>
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
+#include <glm/geometric.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/trigonometric.hpp>
 
 namespace
 {
@@ -16,7 +16,7 @@ constexpr float PITCH_MIN = -89.0f;
 constexpr float PITCH_MAX = 89.0f;
 
 constexpr float MOVE_SPEED  = 12.0f;
-constexpr float SENSITIVITY = 400.0f;
+constexpr float SENSITIVITY = 0.3f;
 
 } // namespace
 
@@ -39,7 +39,7 @@ Camera::Camera()
     UpdateProjection();
 }
 
-void Camera::HandleInput(float deltaTime)
+void Camera::HandleInput(SDL_Window * winodw, float deltaTime)
 {
     int          numKeys;
     const bool * keyboardState = SDL_GetKeyboardState(&numKeys);
@@ -59,8 +59,14 @@ void Camera::HandleInput(float deltaTime)
 
     if (mouseReState & SDL_BUTTON_MASK(SDL_BUTTON_LEFT))
     {
-        RotatePitch(-mouseRelY * SENSITIVITY * deltaTime);
-        RotateYaw(-mouseRelX * SENSITIVITY * deltaTime);
+        SDL_SetWindowRelativeMouseMode(winodw, true);
+
+        RotatePitch(-mouseRelY * SENSITIVITY);
+        RotateYaw(-mouseRelX * SENSITIVITY);
+    }
+    else
+    {
+        SDL_SetWindowRelativeMouseMode(winodw, false);
     }
 
     UpdateView();

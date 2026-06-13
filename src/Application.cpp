@@ -3,6 +3,16 @@
 #include <chrono>
 #include <stdexcept>
 
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_vulkan.h>
+
+#include <imgui.h>
+#include <backends/imgui_impl_sdl3.h>
+
+#include "SceneObject.h"
+#include "RenderPipeline.h"
+#include "RenderUtils.h"
+
 Application::Application()
     : m_isRunning(true)
     , m_isMinimized(false)
@@ -60,7 +70,7 @@ void Application::Run()
 
         if (!m_isMinimized)
         {
-            m_camera.HandleInput(m_deltaTime);
+            m_camera.HandleInput(m_window, m_deltaTime);
 
             m_uiRenderer.BeginFrame();
             BuildApplicationUI();
@@ -158,16 +168,6 @@ void Application::HandleEvents()
         case SDL_EVENT_WINDOW_RESIZED:
             m_renderer.OnWindowResize();
             m_camera.SetScreenSize(event.window.data1, event.window.data2);
-            break;
-
-        case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            if (event.button.button == SDL_BUTTON_LEFT)
-                SDL_SetWindowRelativeMouseMode(m_window, true);
-            break;
-
-        case SDL_EVENT_MOUSE_BUTTON_UP:
-            if (event.button.button == SDL_BUTTON_LEFT)
-                SDL_SetWindowRelativeMouseMode(m_window, false);
             break;
         }
     }

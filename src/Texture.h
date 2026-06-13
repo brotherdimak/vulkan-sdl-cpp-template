@@ -1,16 +1,19 @@
 #pragma once
 
 #include <string>
-#include <vk_mem_alloc.h>
-#include <vulkan/vulkan.h>
+#include <cstdint>
+
+#include <vulkan/vulkan_core.h>
+
+struct VmaAllocation_T;
+typedef struct VmaAllocation_T * VmaAllocation;
 
 struct RenderContext;
 
 class ImageUtils
 {
 public:
-    static VkImageView
-    CreateImageView(const RenderContext & context, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+    static VkImageView CreateImageView(const RenderContext & context, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 };
 
 class Image

@@ -1,12 +1,14 @@
 #include "Mesh.h"
-#include "Renderer.h"
+
+#include <SDL3/SDL_log.h>
+
+#include <stdexcept>
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include <array>
-#include <stdexcept>
+#include "Renderer.h"
 
 // ----------------------------------------------------------------------------
 // Vertex
@@ -93,10 +95,8 @@ Mesh::~Mesh()
 void Mesh::LoadFromFile(const std::string & modelPath)
 {
     Assimp::Importer importer;
-    const aiScene *  scene = importer.ReadFile(
-        modelPath,
-        aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices
-    );
+    const aiScene *  scene =
+        importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         throw std::runtime_error("Failed to load model: " + std::string(importer.GetErrorString()));
@@ -121,23 +121,15 @@ void Mesh::LoadFromFile(const std::string & modelPath)
 
             // Color (default to white if no vertex colors)
             if (mesh->mColors[0])
-            {
                 vertex.color = glm::vec3(mesh->mColors[0][j].r, mesh->mColors[0][j].g, mesh->mColors[0][j].b);
-            }
             else
-            {
                 vertex.color = glm::vec3(1.0f, 1.0f, 1.0f);
-            }
 
             // Texture coordinates
             if (mesh->mTextureCoords[0])
-            {
                 vertex.texCoord = glm::vec2(mesh->mTextureCoords[0][j].x, mesh->mTextureCoords[0][j].y);
-            }
             else
-            {
                 vertex.texCoord = glm::vec2(0.0f, 0.0f);
-            }
 
             m_vertices.push_back(vertex);
         }

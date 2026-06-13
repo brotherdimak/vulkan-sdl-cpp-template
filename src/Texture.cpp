@@ -1,23 +1,21 @@
 #include "Texture.h"
 
-#include "RenderUtils.h"
-#include "Renderer.h"
+#include <stdexcept>
+
+#include <vk_mem_alloc.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include <stdexcept>
+#include "Buffer.h"
+#include "RenderUtils.h"
+#include "Renderer.h"
 
 // ----------------------------------------------------------------------------
 // Image Utils
 // ----------------------------------------------------------------------------
 
-VkImageView ImageUtils::CreateImageView(
-    const RenderContext & context,
-    VkImage               image,
-    VkFormat              format,
-    VkImageAspectFlags    aspectFlags
-)
+VkImageView ImageUtils::CreateImageView(const RenderContext & context, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags)
 {
     VkImageViewCreateInfo viewInfo {};
     viewInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -219,16 +217,7 @@ Texture::~Texture()
 
 void Texture::Bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) const
 {
-    vkCmdBindDescriptorSets(
-        commandBuffer,
-        VK_PIPELINE_BIND_POINT_GRAPHICS,
-        pipelineLayout,
-        1,
-        1,
-        &m_descriptorSet,
-        0,
-        nullptr
-    );
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &m_descriptorSet, 0, nullptr);
 }
 
 void Texture::LoadFromFile(const std::string & filepath)
@@ -245,11 +234,7 @@ void Texture::LoadFromFile(const std::string & filepath)
 
     Buffer stagingBuffer(m_context);
 
-    stagingBuffer.Create(
-        imageSize,
-        VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-    );
+    stagingBuffer.Create(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     stagingBuffer.CopyData(pixels, imageSize);
 

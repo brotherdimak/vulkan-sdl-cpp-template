@@ -36,6 +36,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE lib/vma/include)
 # GLM
 target_include_directories(${PROJECT_NAME} PRIVATE lib/glm)
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE 
+    GLM_FORCE_RADIANS
+    GLM_FORCE_DEPTH_ZERO_TO_ONE
+)
+
 # STB
 target_include_directories(${PROJECT_NAME} PRIVATE lib/stb)
 

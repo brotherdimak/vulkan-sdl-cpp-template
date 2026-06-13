@@ -1,9 +1,11 @@
 #include "Buffer.h"
 
+#include <stdexcept>
+
+#include <vk_mem_alloc.h>
+
 #include "RenderUtils.h"
 #include "Renderer.h"
-
-#include <stdexcept>
 
 // ----------------------------------------------------------------------------
 // Buffer

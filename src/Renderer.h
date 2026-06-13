@@ -1,26 +1,22 @@
 #pragma once
 
-#include <SDL3/SDL.h>
-#include <SDL3/SDL_vulkan.h>
-
-#include <glm/glm.hpp>
-
-#include <vulkan/vulkan.h>
-
-#include <vk_mem_alloc.h>
-
+#include <cstdint>
 #include <string>
 #include <vector>
 
-#include "Buffer.h"
-#include "Camera.h"
-#include "Mesh.h"
-#include "Shader.h"
-#include "Texture.h"
+#include <vulkan/vulkan_core.h>
+
+struct VmaAllocator_T;
+typedef struct VmaAllocator_T * VmaAllocator;
 
 class UIRenderer;
 class RenderPipeline;
 class SceneObject;
+class Image;
+class UniformBuffer;
+class Camera;
+
+struct SDL_Window;
 
 struct RenderContext
 {

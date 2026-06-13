@@ -1,18 +1,6 @@
 #include "Renderer.h"
 
-#include "RenderPipeline.h"
-#include "RenderUtils.h"
-#include "SceneObject.h"
-#include "UIRenderer.h"
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#define VMA_IMPLEMENTATION
-#include <vk_mem_alloc.h>
-
+#include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <cstring>
@@ -21,10 +9,29 @@
 #include <set>
 #include <stdexcept>
 
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_vulkan.h>
+
+#define VMA_IMPLEMENTATION
+#include <vk_mem_alloc.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "Buffer.h"
+#include "Camera.h"
+#include "Mesh.h"
+#include "Texture.h"
+
+#include "RenderPipeline.h"
+#include "RenderUtils.h"
+#include "SceneObject.h"
+#include "UIRenderer.h"
+
 namespace
 {
 
-const uint32_t MAX_FRAMES   = 2; // Double buffering
+const uint32_t MAX_FRAMES   = 2;
 const uint32_t MAX_TEXTURES = 128;
 
 const std::vector<const char *> VALIDATION_LAYERS = {"VK_LAYER_KHRONOS_validation"};
@@ -311,7 +318,7 @@ void Renderer::CreateLogicalDevice()
     QueueFamilyIndices indices = RenderUtils::FindQueueFamilies(m_physicalDevice, m_surface);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+    std::set<uint32_t>                   uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
     float queuePriority = 1.0f;
     for (uint32_t queueFamily : uniqueQueueFamilies)
@@ -396,7 +403,7 @@ void Renderer::CreateSwapChain()
 
     VkSurfaceFormatKHR surfaceFormat = RenderUtils::ChooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR   presentMode   = RenderUtils::ChooseSwapPresentMode(swapChainSupport.presentModes);
-    VkExtent2D         extent = RenderUtils::ChooseSwapExtent(swapChainSupport.capabilities, windowWidth, windowHeight);
+    VkExtent2D         extent        = RenderUtils::ChooseSwapExtent(swapChainSupport.capabilities, windowWidth, windowHeight);
 
     uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
     if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
@@ -452,12 +459,7 @@ void Renderer::CreateImageViews()
 
     for (uint32_t i = 0; i < m_swapChainImages.size(); i++)
     {
-        m_swapChainImageViews[i] = ImageUtils::CreateImageView(
-            m_context,
-            m_swapChainImages[i],
-            m_swapChainImageFormat,
-            VK_IMAGE_ASPECT_COLOR_BIT
-        );
+        m_swapChainImageViews[i] = ImageUtils::CreateImageView(m_context, m_swapChainImages[i], m_swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
     }
 }
 
@@ -498,12 +500,11 @@ void Renderer::CreateRenderPass()
     subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
     VkSubpassDependency dependency {};
-    dependency.srcSubpass   = VK_SUBPASS_EXTERNAL;
-    dependency.dstSubpass   = 0;
-    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+    dependency.srcSubpass    = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass    = 0;
+    dependency.srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
     dependency.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-    dependency.dstStageMask =
-        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    dependency.dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
     dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
     std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
@@ -793,14 +794,8 @@ void Renderer::DrawFrame(UIRenderer * uiRenderer, const Camera & camera, const R
     vkWaitForFences(m_device, 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(
-        m_device,
-        m_swapChain,
-        UINT64_MAX,
-        m_imageAvailableSemaphores[m_currentFrame],
-        VK_NULL_HANDLE,
-        &imageIndex
-    );
+    VkResult result =
+        vkAcquireNextImageKHR(m_device, m_swapChain, UINT64_MAX, m_imageAvailableSemaphores[m_currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {

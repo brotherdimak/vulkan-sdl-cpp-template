@@ -1,11 +1,14 @@
 #include "RenderPipeline.h"
 
+#include <array>
+#include <stdexcept>
+
+#include <SDL3/SDL_log.h>
+
 #include "Renderer.h"
 #include "SceneObject.h"
 #include "Shader.h"
-
-#include <array>
-#include <stdexcept>
+#include "Mesh.h"
 
 RenderPipeline::RenderPipeline(
     const RenderContext & context,

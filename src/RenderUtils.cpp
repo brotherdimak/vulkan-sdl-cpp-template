@@ -1,10 +1,16 @@
 #include "RenderUtils.h"
-#include "Renderer.h"
 
 #include <algorithm>
 #include <cstdint>
 #include <set>
 #include <stdexcept>
+
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_vulkan.h>
+
+#include <vk_mem_alloc.h>
+
+#include "Renderer.h"
 
 // ----------------------------------------------------------------------------
 // Command Buffers

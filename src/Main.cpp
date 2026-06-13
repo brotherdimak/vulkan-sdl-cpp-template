@@ -1,6 +1,11 @@
 #include "Application.h"
-#include <SDL3/SDL.h>
+
+#include <SDL3/SDL_log.h>
+#include <SDL3/SDL_messagebox.h>
+#include <SDL3/SDL_init.h>
+
 #include <stdexcept>
+#include <cstdlib>
 
 int main()
 {
@@ -13,7 +18,7 @@ int main()
     }
     catch (const std::runtime_error & e)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, e.what());
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", e.what());
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", e.what(), nullptr);
         SDL_Quit();
 
